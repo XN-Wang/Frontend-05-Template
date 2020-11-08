@@ -9,7 +9,7 @@ const p = new Proxy(target, handler)
 一个通常以函数作为属性的对象，各属性中的函数分别定义了在执行各种操作时代理 p 的行为。
 
 #### map和object的区别
-![map和object的区别](http://note.youdao.com/yws/public/resource/19a48ce9673359f7255ee341c53c065b/xmlnote/WEBRESOURCE2b179498d5f492207a372e1f9a7ebeca/4798)
+![map和object的区别](http://note.youdao.com/yws/public/resource/19a48ce9673359f7255ee341c53c065b/xmlnote/WEBRESOURCE15f844693d47aac469d8a69df3d11967/4802)
 
 #### Range用法
 ```
