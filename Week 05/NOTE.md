@@ -9,7 +9,8 @@ const p = new Proxy(target, handler)
 一个通常以函数作为属性的对象，各属性中的函数分别定义了在执行各种操作时代理 p 的行为。
 
 #### map和object的区别
-![map和object的区别](http://note.youdao.com/yws/public/resource/19a48ce9673359f7255ee341c53c065b/xmlnote/WEBRESOURCE15f844693d47aac469d8a69df3d11967/4802)
+Objects 和 Maps 类似的是，它们都允许你按键存取一个值、删除键、检测一个键是否绑定了值。因此（并且也没有其他内建的替代方式了）过去我们一直都把对象当成 Maps 使用。不过 Maps 和 Objects 有一些重要的区别，在下列情况里使用 Map 会是更好的选择：
+![map和object的区别](http://note.youdao.com/yws/public/resource/19a48ce9673359f7255ee341c53c065b/xmlnote/WEBRESOURCE6a3f1bf64fda63f5aacef4795aa5b36b/4805)
 
 #### Range用法
 ```
