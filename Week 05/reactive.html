@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input id="r" type="range" min=0 max=255>
+    <input id="g" type="range" min=0 max=255>
+    <input id="b" type="range" min=0 max=255>
+    <div id="color" style="width: 100px;height: 100px;"></div>
+    <script>
+        let callbacks = new Map() //全局callback集合
+        let reactivities = new Map() //缓存proxy
+        let usedReactivities = []
+        let object = {
+            r: 1,
+            g: 1,
+            b: 1
+        }
+        let po = reactive(object)
+        
+        effect(() => {
+            document.getElementById('r').value = po.r
+        })
+        effect(() => {
+            document.getElementById('g').value = po.g
+        })
+        effect(() => {
+            document.getElementById('b').value = po.b
+        })
+
+        document.getElementById('r').addEventListener('input', event => po.r = event.target.value)
+        document.getElementById('g').addEventListener('input', event => po.g = event.target.value)
+        document.getElementById('b').addEventListener('input', event => po.b = event.target.value)
+
+        effect(() => {
+            document.getElementById('color').style.backgroundColor = `rgb(${po.r}, ${po.g}, ${po.b})`
+        })
+
+        function effect(callback) {
+            usedReactivities = [];
+            //由reactive函数生成的对象在执行callback时会触发proxy的get方法，注册回调，然后在set方法里触发回调形成双向绑定
+            callback()
+            
+            for(let reactivity of usedReactivities) {
+                //callbacks = {object: {prop: [callback1, callback2]}}
+                if(!callbacks.has(reactivity[0])) {
+                    callbacks.set(reactivity[0], new Map())
+                }
+                if(!callbacks.get(reactivity[0]).has(reactivity[1])) {
+                    callbacks.get(reactivity[0]).set(reactivity[1], [])
+                }
+                callbacks.get(reactivity[0]).get(reactivity[1]).push(callback)
+            }
+        }
+
+        function reactive(object) {
+            if(reactivities.has(object)) {
+                return reactivities.get(object)
+            }
+            let proxy = new Proxy(object, {
+                set(obj, prop, val) {
+                    obj[prop] = val
+                    if(callbacks.get(obj)) {
+                        if(callbacks.get(obj).get(prop)) {
+                            for(let callback of callbacks.get(obj).get(prop)) {
+                                console.log(obj, prop, callback)
+                                callback()
+                            }
+                        }
+                    }
+                    return obj[prop]
+                },
+                get(obj, prop) {
+                    usedReactivities.push([obj, prop])
+                    //为了能够级联获取po.a.b，判断如果obj[prop]的类型是对象，则调用reactive生成新的proxy
+                    if(typeof obj[prop] === 'object') {
+                        return reactive(obj[prop])
+                    }
+                    return obj[prop]
+                }
+            })
+            //保存proxy
+            reactivities.set(object, proxy)
+            return proxy
+        }
+    </script>
+</body>
+
+</html>
