@@ -130,7 +130,7 @@ function emit(token) {
         computeCSS(element)
         //当前节点和栈顶节点创建父子关系
         top.children.push(element)
-        element.parent = top
+        //element.parent = top
 
         if(!token.isSelfClosing) {
             stack.push(element)
