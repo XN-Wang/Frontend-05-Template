@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="class" id="id"></div>
+    </div>
+    <script>
+        function match(selector, element) {
+            let selectorLists = selector.split(' ').reverse()
+            let queue = []
+            while (element && element.tagName) {
+                queue.push(element)
+                element = element.parentElement
+            }
+            let matchNum = 0
+            for (let i = 0; i < queue.length; i++) {
+                if (matchHelper(selectorLists[matchNum], queue[i])) {
+                    matchNum++
+                }
+                if (matchNum >= selectorLists.length) {
+                    return true
+                }
+            }
+            
+            return false
+        }
+        function matchHelper(selectorLists, element) {
+            let selectorList = selectorLists.match(/(#|.)?[\w]+/g)
+            //处理复合选择器
+            if (selectorList.length > 1) {
+                return handleCompileRule(selectorList, element)
+            } else {
+                const selector = selectorList[0]
+               
+                if (!selector || !element.attributes) {
+                    return false
+                } else if (selector.startsWith('#')) {
+                    var attr = Array.from(element.attributes).filter(attr => attr.name === 'id')[0]
+                    if (attr && attr.value === selector.replace('#', '')) {
+                        return true
+                    }
+                } else if (selector.startsWith('.')) {
+                    var attr = Array.from(element.attributes).filter(attr => attr.name === 'class')[0]
+                    if (attr && attr.value === selector.replace('.', '')) {
+                        return true
+                    }
+                } else {
+                    if (element.tagName.toLowerCase() === selector) {
+                        return true
+                    }
+                }
+               
+                return false
+            }
+        }
+        function handleCompileRule(selectorList, element) {
+            for (let i = 0; i < selectorList.length; i++) {
+                if (!matchHelper(selectorList[i], element)) {
+                    return false
+                }
+                
+            }
+            return true
+        }
+        match("div.container #id.class", document.getElementById("id"))
+    </script>
+</body>
+
+</html>
